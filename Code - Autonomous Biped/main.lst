@@ -1,0 +1,1408 @@
+   1               		.file	"main.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   9               		.text
+  10               	.Ltext0:
+  69               	.global	servo_init
+  71               	servo_init:
+  73               	.Ltext1:
+   1:servo.h       **** #ifndef _SERVO_H_
+   2:servo.h       **** #define _SERVO_H_
+   3:servo.h       **** 
+   4:servo.h       **** int i,j,k;   
+   5:servo.h       **** unsigned char m0h,m0l,m1h,m1l,m2h,m2l,m3h,m3l,x,y;
+   6:servo.h       **** unsigned char temp;
+   7:servo.h       **** void servo_init()
+   8:servo.h       **** {
+  74               	e size = 0 */
+  76               	.LM1:
+  77               		ldi r24,lo8(3)
+  78               		out 79-32,r24
+   9:servo.h       **** 
+  10:servo.h       **** //Timer Control Registers - Fast PWM mode; Clock Prescaler - freq/8
+  11:servo.h       **** TCCR1A=0x03;
+  79               	bn	68,0,12,.LM2-.LFBB1
+  80               	.LM2:
+  81 0000 83E0      		ldi r24,lo8(26)
+  82 0002 8FBD      		out 78-32,r24
+  12:servo.h       **** TCCR1B=0x1A;
+  83               	abn	68,0,15,.LM3-.LFBB1
+  84               	.LM3:
+  85 0004 8AE1      		out 77-32,__zero_reg__
+  13:servo.h       **** 
+  14:servo.h       **** // Starting vount from 0000
+  15:servo.h       **** TCNT1H=0x00;
+  87               	:
+  88               		out 76-32,__zero_reg__
+  16:servo.h       **** TCNT1L=0x00;
+  90               	5:
+  91               		out 71-32,__zero_reg__
+  17:servo.h       **** 
+  18:servo.h       **** //ICR = 0 to disable counting operation
+  19:servo.h       **** ICR1H=0x00;
+  93               	6:
+  94               		out 70-32,__zero_reg__
+  20:servo.h       **** ICR1L=0x00;
+  96               	7:
+  97               		ldi r24,lo8(2)
+  98 000e 16BC      		out 75-32,r24
+  21:servo.h       **** 
+  22:servo.h       **** //first capture at 5ms - 625 counts - 0271h counts
+  23:servo.h       **** OCR1AH=0x02;
+  99               	tabn	68,0,24,.LM8-.LFBB1
+ 100               	.LM8:
+ 101 0010 82E0      		ldi r24,lo8(113)
+ 102 0012 8BBD      		out 74-32,r24
+  24:servo.h       **** OCR1AL=0x71;
+ 103               	abn	68,0,27,.LM9-.LFBB1
+ 104               	.LM9:
+ 105 0014 81E7      		ldi r24,lo8(1)
+ 106 0016 8ABD      		out 73-32,r24
+  25:servo.h       **** 
+  26:servo.h       **** //second capture at 4ms - 500 counts - 01f4h counts
+  27:servo.h       **** OCR1BH=0x01;
+ 107               	abn	68,0,28,.LM10-.LFBB1
+ 108               	.LM10:
+ 109 0018 81E0      		ldi r24,lo8(-12)
+ 110 001a 89BD      		out 72-32,r24
+  28:servo.h       **** OCR1BL=0xf4;
+ 111               	abn	68,0,30,.LM11-.LFBB1
+ 112               	.LM11:
+ 113 001c 84EF      		ldi r24,lo8(24)
+ 114 001e 88BD      		out 89-32,r24
+  29:servo.h       **** 
+  30:servo.h       **** TIMSK=0x18;  
+ 115               	abn	68,0,31,.LM12-.LFBB1
+ 116               	.LM12:
+ 117 0020 88E1      		ldi r24,lo8(-1)
+ 118 0022 89BF      		out 49-32,r24
+  31:servo.h       **** DDRD=0xff;
+ 119               	abn	68,0,33,.LM13-.LFBB1
+ 120               	.LM13:
+ 121 0024 8FEF      	/* #APP */
+ 122 0026 81BB      	 ;  33 "servo.h" 1
+  32:servo.h       **** 
+  33:servo.h       **** sei(); 
+ 123               	
+ 124               	 ;  0 "" 2
+ 125               	/* epilogue start */
+ 127 0028 7894      	.LM14:
+ 128               	/* #NOAPP */
+ 129               		ret
+  34:servo.h       **** 
+  35:servo.h       **** }
+ 130               		servo_init, .-servo_init
+ 131               	.Lscope1:
+ 133 002a 0895      	.global	__vector_6
+ 135               	__vector_6:
+ 137               	.LM15:
+ 138               	.LFBB2:
+ 139               		push __zero_reg__
+  36:servo.h       **** 
+  37:servo.h       **** ISR (TIMER1_COMPA_vect) //void timer1_compa_isr(void)
+  38:servo.h       **** {
+ 140               	in r0,__SREG__
+ 141               		push r0
+ 142               		clr __zero_reg__
+ 143 002c 1F92      	/* prologue: Signal */
+ 144 002e 0F92      	/* frame size = 0 */
+ 146 0032 0F92      	.LM16:
+ 147 0034 1124      		out 50-32,__zero_reg__
+ 149               	.LM17:
+  39:servo.h       **** PORTD=0X00;
+ 150               	,__zero_reg__
+ 152 0036 12BA      	.LM18:
+  40:servo.h       **** TCNT1H=0x00;
+ 153               	t 76-32,__zero_reg__
+ 154               	/* epilogue start */
+  41:servo.h       **** TCNT1L=0x00;
+ 156               	19:
+ 157               		pop r0
+ 158 003a 1CBC      		out __SREG__,r0
+ 159               		pop r0
+  42:servo.h       **** }
+ 160               	 __zero_reg__
+ 161               		reti
+ 163 003e 0FBE      	.Lscope2:
+ 165 0042 1F90      	.global	__vector_7
+ 167               	__vector_7:
+ 169               	.LM20:
+ 170               	.LFBB3:
+ 171               		push __zero_reg__
+ 172               		push r0
+  43:servo.h       **** 
+  44:servo.h       **** ISR (TIMER1_COMPB_vect) // void timer1_compb_isr(void)
+  45:servo.h       **** {
+ 173               	__
+ 174               		push r0
+ 175               		clr __zero_reg__
+ 176 0046 1F92      		push r24
+ 177 0048 0F92      		push r25
+ 178 004a 0FB6      	/* prologue: Signal */
+ 179 004c 0F92      	/* frame size = 0 */
+ 181 0050 8F93      	.LM21:
+ 182 0052 9F93      		lds r24,i
+ 183               		lds r25,(i)+1
+ 184               		cpi r24,1
+  46:servo.h       **** switch(i)
+ 185               	ero_reg__
+ 186               		breq .L8
+ 187 0054 8091 0000 		cpi r24,2
+ 188 0058 9091 0000 		cpc r25,__zero_reg__
+ 189 005c 8130      		brge .L11
+ 190 005e 9105      		or r24,r25
+ 191 0060 01F0      		breq .L7
+ 192 0062 8230      		rjmp .L12
+ 193 0064 9105      	.L11:
+ 194 0066 04F4      		cpi r24,2
+ 195 0068 892B      		cpc r25,__zero_reg__
+ 196 006a 01F0      		breq .L9
+ 197 006c 00C0      		sbiw r24,3
+ 198               		brne .L12
+ 199 006e 8230      		rjmp .L14
+ 200 0070 9105      	.L7:
+ 202 0074 0397      	.LM22:
+ 203 0076 01F4      		lds r24,m0h
+ 204 0078 00C0      		out 73-32,r24
+  47:servo.h       **** {
+  48:servo.h       **** case 0:
+  49:servo.h       ****  OCR1BH=m0h;     
+ 206               	out 72-32,r24
+ 208 007a 8091 0000 	.LM24:
+ 209 007e 89BD      		ldi r24,lo8(1)
+  50:servo.h       ****  OCR1BL=m0l;     
+ 210               	 50-32,r24
+ 212 0080 8091 0000 	.LM25:
+ 213 0084 88BD      		ldi r24,lo8(1)
+  51:servo.h       ****  PORTD=0X01;
+ 214               	 r25,hi8(1)
+ 215               		rjmp .L13
+ 216 0086 81E0      	.L8:
+  52:servo.h       ****  i=1;
+ 218               	6:
+ 219               		lds r24,m1h
+ 220 008a 81E0      		out 73-32,r24
+ 222 008e 00C0      	.LM27:
+ 223               		lds r24,m1l
+  53:servo.h       ****  break ;  
+  54:servo.h       ****  
+  55:servo.h       **** case 1:
+  56:servo.h       ****  OCR1BH=m1h;       
+ 224               	2-32,r24
+ 226 0090 8091 0000 	.LM28:
+ 227 0094 89BD      		ldi r24,lo8(2)
+  57:servo.h       ****  OCR1BL=m1l;      
+ 228               	 50-32,r24
+ 230 0096 8091 0000 	.LM29:
+ 231 009a 88BD      		ldi r24,lo8(2)
+  58:servo.h       ****  PORTD=0X02;
+ 232               	 r25,hi8(2)
+ 233               		rjmp .L13
+ 234 009c 82E0      	.L9:
+  59:servo.h       ****  i=2;
+ 236               	0:
+ 237               		lds r24,m2h
+ 238 00a0 82E0      		out 73-32,r24
+ 240 00a4 00C0      	.LM31:
+ 241               		lds r24,m2l
+  60:servo.h       ****  break ; 
+  61:servo.h       ****  
+  62:servo.h       **** case 2:
+  63:servo.h       ****  OCR1BH=m2h;              
+ 242               	2-32,r24
+ 244 00a6 8091 0000 	.LM32:
+ 245 00aa 89BD      		ldi r24,lo8(4)
+  64:servo.h       ****  OCR1BL=m2l;                
+ 246               	 50-32,r24
+ 248 00ac 8091 0000 	.LM33:
+ 249 00b0 88BD      		ldi r24,lo8(3)
+  65:servo.h       ****  PORTD=0X04;
+ 250               	 r25,hi8(3)
+ 251               	.L13:
+ 252 00b2 84E0      		sts (i)+1,r25
+ 253 00b4 82BB      		sts i,r24
+  66:servo.h       ****  i=3;
+ 254               	p .L12
+ 255               	.L14:
+ 257 00b8 90E0      	.LM34:
+ 258               		lds r24,m3h
+ 259 00ba 9093 0000 		out 73-32,r24
+ 261 00c2 00C0      	.LM35:
+ 262               		lds r24,m3l
+  67:servo.h       ****  break ;
+  68:servo.h       ****  
+  69:servo.h       **** case 3:
+  70:servo.h       ****  OCR1BH=m3h;   
+ 263               	2,r24
+ 265 00c4 8091 0000 	.LM36:
+ 266 00c8 89BD      		ldi r24,lo8(8)
+  71:servo.h       ****  OCR1BL=m3l;      
+ 267               	 50-32,r24
+ 269 00ca 8091 0000 	.LM37:
+ 270 00ce 88BD      		sts (i)+1,__zero_reg__
+  72:servo.h       ****  PORTD=0X08;
+ 271               	 i,__zero_reg__
+ 272               	.L12:
+ 273 00d0 88E0      	/* epilogue start */
+  73:servo.h       ****  i=0;
+ 275               	8:
+ 276               		pop r25
+ 277 00d4 1092 0000 		pop r24
+ 278 00d8 1092 0000 		pop r0
+ 279               		out __SREG__,r0
+ 280               		pop r0
+  74:servo.h       ****  break ; 
+  75:servo.h       ****  } 
+  76:servo.h       **** }
+ 281               	_zero_reg__
+ 282               		reti
+ 284 00de 8F91      	.Lscope3:
+ 288 00e6 1F90      	.global	deg
+ 290               	deg:
+ 292               	.LM39:
+ 293               	.LFBB4:
+ 294               		push r28
+ 295               		push r29
+ 296               	/* prologue: function */
+ 297               	/* frame size = 0 */
+  77:servo.h       **** 
+  78:servo.h       **** void deg(float value,int m)
+  79:servo.h       **** {
+ 298               	tabn	68,0,81,.LM40-.LFBB4
+ 299               	.LM40:
+ 300               		ldi r18,lo8(0x3f88f5c3)
+ 301 00ea CF93      		ldi r19,hi8(0x3f88f5c3)
+ 302 00ec DF93      		ldi r20,hlo8(0x3f88f5c3)
+ 303               		ldi r21,hhi8(0x3f88f5c3)
+ 304               		call __mulsf3
+ 305 00ee EA01      		ldi r18,lo8(0x43a78000)
+  80:servo.h       ****         unsigned int va;
+  81:servo.h       ****         va=335+value*1.07;
+ 306               	,hi8(0x43a78000)
+ 307               		ldi r20,hlo8(0x43a78000)
+ 308 00f0 23EC      		ldi r21,hhi8(0x43a78000)
+ 309 00f2 35EF      		call __addsf3
+ 310 00f4 48E8      		call __fixunssfsi
+ 312 00f8 0E94 0000 	.LM41:
+ 313 00fc 20E0      		cpi r28,2
+ 314 00fe 30E8      		cpc r29,__zero_reg__
+ 315 0100 47EA      		brne .L16
+ 317 0104 0E94 0000 	.LM42:
+ 318 0108 0E94 0000 		sts m1l,r22
+  82:servo.h       **** 
+  83:servo.h       **** 		if(m==2)              
+ 319               	86,.LM43-.LFBB4
+ 320               	.LM43:
+ 321 010c C230      		sts temp,r23
+ 323 0110 01F4      	.LM44:
+  84:servo.h       ****         {
+  85:servo.h       ****                 m1l=va;
+ 324               	m1h,r23
+ 325               		rjmp .L20
+ 326 0112 6093 0000 	.L16:
+  86:servo.h       ****                 temp=va>>8;
+ 327               	tabn	68,0,89,.LM45-.LFBB4
+ 328               	.LM45:
+ 329 0116 7093 0000 		cpi r28,3
+  87:servo.h       ****                 m1h=temp;
+ 330               	c r29,__zero_reg__
+ 331               		brne .L18
+ 333 011e 00C0      	.LM46:
+ 334               		sts m2l,r22
+  88:servo.h       ****         }
+  89:servo.h       ****         if(m==3)            
+ 335               	bn	68,0,92,.LM47-.LFBB4
+ 336               	.LM47:
+ 337 0120 C330      		sts temp,r23
+ 339 0124 01F4      	.LM48:
+  90:servo.h       ****         {
+  91:servo.h       ****                 m2l=va;
+ 340               	m2h,r23
+ 341               		rjmp .L20
+ 342 0126 6093 0000 	.L18:
+  92:servo.h       ****                 temp=va>>8;
+ 343               	tabn	68,0,95,.LM49-.LFBB4
+ 344               	.LM49:
+ 345 012a 7093 0000 		sbiw r28,0
+  93:servo.h       ****                 m2h=temp;
+ 346               	ne .L19
+ 348 012e 7093 0000 	.LM50:
+ 349 0132 00C0      		sts m3l,r22
+  94:servo.h       ****         }
+  95:servo.h       ****         if(m==0)       
+ 351               	:
+ 352               		sts temp,r23
+ 354 0136 01F4      	.LM52:
+  96:servo.h       ****         {
+  97:servo.h       ****                 m3l=va;
+ 355               	 m3h,r23
+ 356               		rjmp .L20
+ 357 0138 6093 0000 	.L19:
+  98:servo.h       ****                 temp=va>>8;
+ 358               	tabn	68,0,101,.LM53-.LFBB4
+ 359               	.LM53:
+ 360 013c 7093 0000 		sbiw r28,1
+  99:servo.h       ****                 m3h=temp;
+ 361               	ne .L20
+ 363 0140 7093 0000 	.LM54:
+ 364 0144 00C0      		sts m0l,r22
+ 100:servo.h       ****         }
+ 101:servo.h       ****         if(m==1)     
+ 366               	:
+ 367               		sts temp,r23
+ 369 0148 01F4      	.LM56:
+ 102:servo.h       ****         {
+ 103:servo.h       ****                 m0l=va;
+ 370               	 m0h,r23
+ 371               	.L20:
+ 372 014a 6093 0000 	/* epilogue start */
+ 104:servo.h       ****                 temp=va>>8;
+ 373               	tabn	68,0,107,.LM57-.LFBB4
+ 374               	.LM57:
+ 375 014e 7093 0000 		pop r29
+ 105:servo.h       ****                 m0h=temp;
+ 376               	p r28
+ 377               		ret
+ 379               	.Lscope4:
+ 106:servo.h       ****         }
+ 107:servo.h       **** }
+ 381               	bs	"delayval:P(0,4)",64,0,0,24
+ 382               	.global	msdelay
+ 384 0158 CF91      	msdelay:
+ 386               	.Ltext2:
+ 388               	.LM58:
+ 389               	.LFBB5:
+ 390               	/* prologue: function */
+ 391               	/* frame size = 0 */
+ 393               	.LM59:
+ 394               		lds r18,delaycnt2
+   1:main.c        **** #include <avr/io.h>
+   2:main.c        **** #include <avr/interrupt.h>
+   3:main.c        **** #include "servo.h"
+   4:main.c        **** 
+   5:main.c        **** unsigned int delaymilli, delaycnt1, delaycnt2;  	//      variables to generate delay functions
+   6:main.c        **** unsigned int steer = 90;							//      variable to steer the leg left-right
+   7:main.c        **** unsigned int turnbk_flag = 0;
+   8:main.c        **** /******************************* function to generate a delay of delayval milliseconds ************
+   9:main.c        **** void msdelay(unsigned int delayval)
+  10:main.c        **** {
+ 395               	ycnt2)+1
+ 396               		ldi r20,lo8(0)
+ 397               		ldi r21,hi8(0)
+ 398               		rjmp .L22
+ 399               	.L23:
+ 401               	.LM60:
+ 402 015c 2091 0000 	/* #APP */
+ 403 0160 3091 0000 	 ;  16 "main.c" 1
+ 404 0164 40E0      		nop
+ 405 0166 50E0      	 ;  0 "" 2
+ 406 0168 00C0      	/* #NOAPP */
+ 407               	.L25:
+  11:main.c        **** 	for(delaymilli = 0; delaymilli <= delayval; delaymilli++) 
+  12:main.c        **** 	{
+  13:main.c        **** 			{
+  14:main.c        **** 			 for(delaycnt2 = 0; delaycnt2 <= 125; delaycnt2++)
+  15:main.c        **** 				{
+  16:main.c        **** 				asm("nop");
+ 408               	(-(1))
+ 409               		sbci r19,hi8(-(1))
+ 411               	.LM61:
+ 412 016a 0000      		cpi r18,127
+ 413               		cpc r19,__zero_reg__
+ 414               		brne .L23
+ 415               		subi r20,lo8(-(1))
+ 416 016c 2F5F      		sbci r21,hi8(-(1))
+ 417 016e 3F4F      		ldi r18,lo8(126)
+ 418               		ldi r19,hi8(126)
+ 419               	.L22:
+ 421 0172 3105      	.LM62:
+ 422 0174 01F4      		cp r24,r20
+ 423 0176 4F5F      		cpc r25,r21
+ 424 0178 5F4F      		brlo .L24
+ 425 017a 2EE7      		ldi r18,lo8(0)
+ 426 017c 30E0      		ldi r19,hi8(0)
+ 427               		rjmp .L25
+ 428               	.L24:
+ 429               		sts (delaycnt2)+1,r19
+ 430 017e 8417      		sts delaycnt2,r18
+ 431 0180 9507      		sts (delaymilli)+1,r21
+ 432 0182 00F0      		sts delaymilli,r20
+ 433 0184 20E0      	/* epilogue start */
+ 435 0188 00C0      	.LM63:
+ 436               		ret
+ 438 018e 2093 0000 	.Lscope5:
+ 440 0196 4093 0000 	.global	walk
+  17:main.c        **** 				}
+  18:main.c        **** 			}
+  19:main.c        **** 	}
+  20:main.c        **** }
+ 442               	
+ 443               	.LM64:
+ 444 019a 0895      	.LFBB6:
+ 445               	/* prologue: function */
+ 446               	/* frame size = 0 */
+ 448               	.LM65:
+ 449               		ldi r22,lo8(0x432f0000)
+ 450               		ldi r23,hi8(0x432f0000)
+  21:main.c        **** 
+  22:main.c        **** 
+  23:main.c        **** /********************************** function to generate biped walking motion through motors ******
+  24:main.c        **** void walk()
+  25:main.c        **** {
+ 451               	,hlo8(0x432f0000)
+ 452               		ldi r25,hhi8(0x432f0000)
+ 453               		ldi r20,lo8(0)
+ 454               		ldi r21,hi8(0)
+ 455               		call deg
+  26:main.c        **** 
+  27:main.c        **** // step 1: 		default standing position
+  28:main.c        **** deg(175,0);
+ 456               	bn	68,0,29,.LM66-.LFBB6
+ 457               	.LM66:
+ 458 019c 60E0      		ldi r22,lo8(0x430c0000)
+ 459 019e 70E0      		ldi r23,hi8(0x430c0000)
+ 460 01a0 8FE2      		ldi r24,hlo8(0x430c0000)
+ 461 01a2 93E4      		ldi r25,hhi8(0x430c0000)
+ 462 01a4 40E0      		ldi r20,lo8(1)
+ 463 01a6 50E0      		ldi r21,hi8(1)
+ 464 01a8 0E94 0000 		call deg
+  29:main.c        **** deg(140,1);
+ 465               	8,0,30,.LM67-.LFBB6
+ 466               	.LM67:
+ 467 01ac 60E0      		ldi r22,lo8(0x43160000)
+ 468 01ae 70E0      		ldi r23,hi8(0x43160000)
+ 469 01b0 8CE0      		ldi r24,hlo8(0x43160000)
+ 470 01b2 93E4      		ldi r25,hhi8(0x43160000)
+ 471 01b4 41E0      		ldi r20,lo8(2)
+ 472 01b6 50E0      		ldi r21,hi8(2)
+ 473 01b8 0E94 0000 		call deg
+  30:main.c        **** deg(150,2);
+ 474               	8,0,31,.LM68-.LFBB6
+ 475               	.LM68:
+ 476 01bc 60E0      		lds r22,steer
+ 477 01be 70E0      		lds r23,(steer)+1
+ 478 01c0 86E1      		ldi r24,lo8(0)
+ 479 01c2 93E4      		ldi r25,hi8(0)
+ 480 01c4 42E0      		call __floatunsisf
+ 481 01c6 50E0      		ldi r20,lo8(3)
+ 482 01c8 0E94 0000 		ldi r21,hi8(3)
+  31:main.c        **** deg(steer,3);
+ 483               	
+ 485 01cc 6091 0000 	.LM69:
+ 486 01d0 7091 0000 		ldi r24,lo8(200)
+ 487 01d4 80E0      		ldi r25,hi8(200)
+ 488 01d6 90E0      		call msdelay
+ 490 01dc 43E0      	.LM70:
+ 491 01de 50E0      		ldi r22,lo8(0x42fa0000)
+ 492 01e0 0E94 0000 		ldi r23,hi8(0x42fa0000)
+  32:main.c        **** msdelay(200);
+ 493               	hlo8(0x42fa0000)
+ 494               		ldi r25,hhi8(0x42fa0000)
+ 495 01e4 88EC      		ldi r20,lo8(0)
+ 496 01e6 90E0      		ldi r21,hi8(0)
+ 497 01e8 0E94 0000 		call deg
+  33:main.c        **** 
+  34:main.c        **** //step 2: 		push leg forward, rest the dummy legs ahead 
+  35:main.c        **** deg(125,0);
+ 498               	bn	68,0,36,.LM71-.LFBB6
+ 499               	.LM71:
+ 500 01ec 60E0      		ldi r22,lo8(0x42be0000)
+ 501 01ee 70E0      		ldi r23,hi8(0x42be0000)
+ 502 01f0 8AEF      		ldi r24,hlo8(0x42be0000)
+ 503 01f2 92E4      		ldi r25,hhi8(0x42be0000)
+ 504 01f4 40E0      		ldi r20,lo8(1)
+ 505 01f6 50E0      		ldi r21,hi8(1)
+ 506 01f8 0E94 0000 		call deg
+  36:main.c        **** deg(95,1);
+ 507               	8,0,37,.LM72-.LFBB6
+ 508               	.LM72:
+ 509 01fc 60E0      		ldi r22,lo8(0x430c0000)
+ 510 01fe 70E0      		ldi r23,hi8(0x430c0000)
+ 511 0200 8EEB      		ldi r24,hlo8(0x430c0000)
+ 512 0202 92E4      		ldi r25,hhi8(0x430c0000)
+ 513 0204 41E0      		ldi r20,lo8(2)
+ 514 0206 50E0      		ldi r21,hi8(2)
+ 515 0208 0E94 0000 		call deg
+  37:main.c        **** deg(140,2);
+ 516               	8,0,38,.LM73-.LFBB6
+ 517               	.LM73:
+ 518 020c 60E0      		ldi r24,lo8(200)
+ 519 020e 70E0      		ldi r25,hi8(200)
+ 520 0210 8CE0      		call msdelay
+ 522 0214 42E0      	.LM74:
+ 523 0216 50E0      		ldi r22,lo8(0x42fa0000)
+ 524 0218 0E94 0000 		ldi r23,hi8(0x42fa0000)
+  38:main.c        **** msdelay(200);
+ 525               	hlo8(0x42fa0000)
+ 526               		ldi r25,hhi8(0x42fa0000)
+ 527 021c 88EC      		ldi r20,lo8(0)
+ 528 021e 90E0      		ldi r21,hi8(0)
+ 529 0220 0E94 0000 		call deg
+  39:main.c        **** 
+  40:main.c        **** //step 3:		raise leg upward, dummy legs act as support
+  41:main.c        **** deg(125,0);
+ 530               	bn	68,0,42,.LM75-.LFBB6
+ 531               	.LM75:
+ 532 0224 60E0      		ldi r22,lo8(0x42a00000)
+ 533 0226 70E0      		ldi r23,hi8(0x42a00000)
+ 534 0228 8AEF      		ldi r24,hlo8(0x42a00000)
+ 535 022a 92E4      		ldi r25,hhi8(0x42a00000)
+ 536 022c 40E0      		ldi r20,lo8(1)
+ 537 022e 50E0      		ldi r21,hi8(1)
+ 538 0230 0E94 0000 		call deg
+  42:main.c        **** deg(80,1);
+ 539               	8,0,43,.LM76-.LFBB6
+ 540               	.LM76:
+ 541 0234 60E0      		ldi r22,lo8(0x43250000)
+ 542 0236 70E0      		ldi r23,hi8(0x43250000)
+ 543 0238 80EA      		ldi r24,hlo8(0x43250000)
+ 544 023a 92E4      		ldi r25,hhi8(0x43250000)
+ 545 023c 41E0      		ldi r20,lo8(2)
+ 546 023e 50E0      		ldi r21,hi8(2)
+ 547 0240 0E94 0000 		call deg
+  43:main.c        **** deg(165,2);
+ 548               	8,0,44,.LM77-.LFBB6
+ 549               	.LM77:
+ 550 0244 60E0      		ldi r24,lo8(200)
+ 551 0246 70E0      		ldi r25,hi8(200)
+ 552 0248 85E2      		call msdelay
+ 554 024c 42E0      	.LM78:
+ 555 024e 50E0      		ldi r22,lo8(0x432f0000)
+ 556 0250 0E94 0000 		ldi r23,hi8(0x432f0000)
+  44:main.c        **** msdelay(200);
+ 557               	hlo8(0x432f0000)
+ 558               		ldi r25,hhi8(0x432f0000)
+ 559 0254 88EC      		ldi r20,lo8(0)
+ 560 0256 90E0      		ldi r21,hi8(0)
+ 561 0258 0E94 0000 		call deg
+  45:main.c        **** 
+  46:main.c        **** //step 4:		move raised leg forward, dummy legs act as support
+  47:main.c        **** deg(175,0);
+ 562               	bn	68,0,48,.LM79-.LFBB6
+ 563               	.LM79:
+ 564 025c 60E0      		ldi r22,lo8(0x42a00000)
+ 565 025e 70E0      		ldi r23,hi8(0x42a00000)
+ 566 0260 8FE2      		ldi r24,hlo8(0x42a00000)
+ 567 0262 93E4      		ldi r25,hhi8(0x42a00000)
+ 568 0264 40E0      		ldi r20,lo8(1)
+ 569 0266 50E0      		ldi r21,hi8(1)
+ 570 0268 0E94 0000 		call deg
+  48:main.c        **** deg(80,1);
+ 571               	8,0,49,.LM80-.LFBB6
+ 572               	.LM80:
+ 573 026c 60E0      		ldi r22,lo8(0x43250000)
+ 574 026e 70E0      		ldi r23,hi8(0x43250000)
+ 575 0270 80EA      		ldi r24,hlo8(0x43250000)
+ 576 0272 92E4      		ldi r25,hhi8(0x43250000)
+ 577 0274 41E0      		ldi r20,lo8(2)
+ 578 0276 50E0      		ldi r21,hi8(2)
+ 579 0278 0E94 0000 		call deg
+  49:main.c        **** deg(165,2);
+ 580               	8,0,50,.LM81-.LFBB6
+ 581               	.LM81:
+ 582 027c 60E0      		ldi r24,lo8(200)
+ 583 027e 70E0      		ldi r25,hi8(200)
+ 584 0280 85E2      		call msdelay
+ 586 0284 42E0      	.LM82:
+ 587 0286 50E0      		ldi r22,lo8(0x432f0000)
+ 588 0288 0E94 0000 		ldi r23,hi8(0x432f0000)
+  50:main.c        **** msdelay(200);
+ 589               	hlo8(0x432f0000)
+ 590               		ldi r25,hhi8(0x432f0000)
+ 591 028c 88EC      		ldi r20,lo8(0)
+ 592 028e 90E0      		ldi r21,hi8(0)
+ 593 0290 0E94 0000 		call deg
+  51:main.c        **** 
+  52:main.c        **** //step 5:		rest the leg down
+  53:main.c        **** deg(175,0);
+ 594               	bn	68,0,54,.LM83-.LFBB6
+ 595               	.LM83:
+ 596 0294 60E0      		ldi r22,lo8(0x42dc0000)
+ 597 0296 70E0      		ldi r23,hi8(0x42dc0000)
+ 598 0298 8FE2      		ldi r24,hlo8(0x42dc0000)
+ 599 029a 93E4      		ldi r25,hhi8(0x42dc0000)
+ 600 029c 40E0      		ldi r20,lo8(1)
+ 601 029e 50E0      		ldi r21,hi8(1)
+ 602 02a0 0E94 0000 		call deg
+  54:main.c        **** deg(110,1);
+ 603               	8,0,55,.LM84-.LFBB6
+ 604               	.LM84:
+ 605 02a4 60E0      		ldi r22,lo8(0x43250000)
+ 606 02a6 70E0      		ldi r23,hi8(0x43250000)
+ 607 02a8 8CED      		ldi r24,hlo8(0x43250000)
+ 608 02aa 92E4      		ldi r25,hhi8(0x43250000)
+ 609 02ac 41E0      		ldi r20,lo8(2)
+ 610 02ae 50E0      		ldi r21,hi8(2)
+ 611 02b0 0E94 0000 		call deg
+  55:main.c        **** deg(165,2);
+ 612               	8,0,56,.LM85-.LFBB6
+ 613               	.LM85:
+ 614 02b4 60E0      		ldi r24,lo8(200)
+ 615 02b6 70E0      		ldi r25,hi8(200)
+ 616 02b8 85E2      		call msdelay
+ 617 02ba 93E4      	/* epilogue start */
+ 619 02be 50E0      	.LM86:
+ 620 02c0 0E94 0000 		ret
+  56:main.c        **** msdelay(200);
+ 621               	lk, .-walk
+ 622               	.Lscope6:
+ 624 02c6 90E0      	.global	stand
+ 626               	stand:
+  57:main.c        **** 
+  58:main.c        **** }
+ 627               	n	68,0,62,.LM87-.LFBB7
+ 628               	.LM87:
+ 629 02cc 0895      	.LFBB7:
+ 630               	/* prologue: function */
+ 631               	/* frame size = 0 */
+ 633               	.LM88:
+ 634               		ldi r22,lo8(0x432f0000)
+ 635               		ldi r23,hi8(0x432f0000)
+  59:main.c        **** 
+  60:main.c        **** /*************************** Function to generate default standing postion at initialization ******
+  61:main.c        **** void stand()
+  62:main.c        **** {
+ 636               	hlo8(0x432f0000)
+ 637               		ldi r25,hhi8(0x432f0000)
+ 638               		ldi r20,lo8(0)
+ 639               		ldi r21,hi8(0)
+ 640               		call deg
+  63:main.c        **** 	deg(175,0);
+ 641               	bn	68,0,64,.LM89-.LFBB7
+ 642               	.LM89:
+ 643 02ce 60E0      		ldi r22,lo8(0x430c0000)
+ 644 02d0 70E0      		ldi r23,hi8(0x430c0000)
+ 645 02d2 8FE2      		ldi r24,hlo8(0x430c0000)
+ 646 02d4 93E4      		ldi r25,hhi8(0x430c0000)
+ 647 02d6 40E0      		ldi r20,lo8(1)
+ 648 02d8 50E0      		ldi r21,hi8(1)
+ 649 02da 0E94 0000 		call deg
+  64:main.c        **** 	deg(140,1);
+ 650               	8,0,65,.LM90-.LFBB7
+ 651               	.LM90:
+ 652 02de 60E0      		ldi r22,lo8(0x43160000)
+ 653 02e0 70E0      		ldi r23,hi8(0x43160000)
+ 654 02e2 8CE0      		ldi r24,hlo8(0x43160000)
+ 655 02e4 93E4      		ldi r25,hhi8(0x43160000)
+ 656 02e6 41E0      		ldi r20,lo8(2)
+ 657 02e8 50E0      		ldi r21,hi8(2)
+ 658 02ea 0E94 0000 		call deg
+  65:main.c        **** 	deg(150,2);
+ 659               	8,0,66,.LM91-.LFBB7
+ 660               	.LM91:
+ 661 02ee 60E0      		lds r22,steer
+ 662 02f0 70E0      		lds r23,(steer)+1
+ 663 02f2 86E1      		ldi r24,lo8(0)
+ 664 02f4 93E4      		ldi r25,hi8(0)
+ 665 02f6 42E0      		call __floatunsisf
+ 666 02f8 50E0      		ldi r20,lo8(3)
+ 667 02fa 0E94 0000 		ldi r21,hi8(3)
+  66:main.c        **** 	deg(steer,3);
+ 668               	
+ 670 02fe 6091 0000 	.LM92:
+ 671 0302 7091 0000 		ldi r24,lo8(1000)
+ 672 0306 80E0      		ldi r25,hi8(1000)
+ 673 0308 90E0      		call msdelay
+ 674 030a 0E94 0000 	/* epilogue start */
+ 676 0310 50E0      	.LM93:
+ 677 0312 0E94 0000 		ret
+  67:main.c        **** 		msdelay(1000);
+ 678               	and, .-stand
+ 679               	.Lscope7:
+ 681 0318 93E0      	.global	check
+ 683               	check:
+  68:main.c        **** 
+  69:main.c        **** }
+ 684               	n	68,0,73,.LM94-.LFBB8
+ 685               	.LM94:
+ 686 031e 0895      	.LFBB8:
+ 687               	/* prologue: function */
+ 688               	/* frame size = 0 */
+ 690               	.LM95:
+ 691               		ldi r22,lo8(0x430c0000)
+ 692               		ldi r23,hi8(0x430c0000)
+  70:main.c        **** 
+  71:main.c        **** /*************************** Function to check operation of motors ********************************
+  72:main.c        **** void check()
+  73:main.c        **** {
+ 693               	hlo8(0x430c0000)
+ 694               		ldi r25,hhi8(0x430c0000)
+ 695               		ldi r20,lo8(0)
+ 696               		ldi r21,hi8(0)
+ 697               		call deg
+  74:main.c        **** 	deg(140,0);			//    knee
+ 698               	bn	68,0,75,.LM96-.LFBB8
+ 699               	.LM96:
+ 700 0320 60E0      		ldi r22,lo8(0x42f00000)
+ 701 0322 70E0      		ldi r23,hi8(0x42f00000)
+ 702 0324 8CE0      		ldi r24,hlo8(0x42f00000)
+ 703 0326 93E4      		ldi r25,hhi8(0x42f00000)
+ 704 0328 40E0      		ldi r20,lo8(1)
+ 705 032a 50E0      		ldi r21,hi8(1)
+ 706 032c 0E94 0000 		call deg
+  75:main.c        **** 	deg(120,1);			//    thigh
+ 707               	8,0,76,.LM97-.LFBB8
+ 708               	.LM97:
+ 709 0330 60E0      		ldi r22,lo8(0x43070000)
+ 710 0332 70E0      		ldi r23,hi8(0x43070000)
+ 711 0334 80EF      		ldi r24,hlo8(0x43070000)
+ 712 0336 92E4      		ldi r25,hhi8(0x43070000)
+ 713 0338 41E0      		ldi r20,lo8(2)
+ 714 033a 50E0      		ldi r21,hi8(2)
+ 715 033c 0E94 0000 		call deg
+  76:main.c        **** 	deg(135,2);			//    ankle
+ 716               	8,0,77,.LM98-.LFBB8
+ 717               	.LM98:
+ 718 0340 60E0      		ldi r22,lo8(0x42b40000)
+ 719 0342 70E0      		ldi r23,hi8(0x42b40000)
+ 720 0344 87E0      		ldi r24,hlo8(0x42b40000)
+ 721 0346 93E4      		ldi r25,hhi8(0x42b40000)
+ 722 0348 42E0      		ldi r20,lo8(3)
+ 723 034a 50E0      		ldi r21,hi8(3)
+ 724 034c 0E94 0000 		call deg
+  77:main.c        **** 	deg(90,3);
+ 725               	8,0,78,.LM99-.LFBB8
+ 726               	.LM99:
+ 727 0350 60E0      		ldi r24,lo8(1000)
+ 728 0352 70E0      		ldi r25,hi8(1000)
+ 729 0354 84EB      		call msdelay
+ 730 0356 92E4      	/* epilogue start */
+ 732 035a 50E0      	.LM100:
+ 733 035c 0E94 0000 		ret
+  78:main.c        **** 		msdelay(1000);
+ 734               	eck, .-check
+ 735               	.Lscope8:
+ 737 0362 93E0      	.global	turnleft
+ 739               	turnleft:
+  79:main.c        **** 
+  80:main.c        **** }
+ 740               	n	68,0,84,.LM101-.LFBB9
+ 741               	.LM101:
+ 742 0368 0895      	.LFBB9:
+ 743               	/* prologue: function */
+ 744               	/* frame size = 0 */
+ 746               	.LM102:
+ 747               		call stand
+  81:main.c        **** 
+  82:main.c        **** /*********************************** Function to turn left ****************************************
+  83:main.c        **** void turnleft()
+  84:main.c        **** {
+ 749               	ldi r24,lo8(200)
+ 750               		ldi r25,hi8(200)
+ 751               		call msdelay
+ 753               	.LM104:
+  85:main.c        ****     stand();
+ 754               	r22,lo8(0x430c0000)
+ 755               		ldi r23,hi8(0x430c0000)
+ 756 036a 0E94 0000 		ldi r24,hlo8(0x430c0000)
+  86:main.c        **** 	msdelay(200);
+ 757               	i r25,hhi8(0x430c0000)
+ 758               		ldi r20,lo8(0)
+ 759 036e 88EC      		ldi r21,hi8(0)
+ 760 0370 90E0      		call deg
+  87:main.c        **** 	
+  88:main.c        **** 	deg(140,0);			//    knee
+ 762               	5:
+ 763               		ldi r22,lo8(0x42f00000)
+ 764 0376 60E0      		ldi r23,hi8(0x42f00000)
+ 765 0378 70E0      		ldi r24,hlo8(0x42f00000)
+ 766 037a 8CE0      		ldi r25,hhi8(0x42f00000)
+ 767 037c 93E4      		ldi r20,lo8(1)
+ 768 037e 40E0      		ldi r21,hi8(1)
+ 769 0380 50E0      		call deg
+  89:main.c        **** 	deg(120,1);			//    thigh
+ 771               	ldi r22,lo8(0x43070000)
+ 772               		ldi r23,hi8(0x43070000)
+ 773 0386 60E0      		ldi r24,hlo8(0x43070000)
+ 774 0388 70E0      		ldi r25,hhi8(0x43070000)
+ 775 038a 80EF      		ldi r20,lo8(2)
+ 776 038c 92E4      		ldi r21,hi8(2)
+ 777 038e 41E0      		rjmp .L38
+ 778 0390 50E0      	.L36:
+  90:main.c        **** 	deg(135,2);			//    ankle
+ 780               	lds r22,steer
+ 781               		lds r23,(steer)+1
+ 782 0396 60E0      		cpi r22,175
+ 783 0398 70E0      		cpc r23,__zero_reg__
+ 784 039a 87E0      		breq .L37
+ 786 039e 42E0      	.LM108:
+ 787 03a0 50E0      		subi r22,lo8(-(1))
+ 788 03a2 00C0      		sbci r23,hi8(-(1))
+ 789               		sts (steer)+1,r23
+  91:main.c        **** 	msdelay(50);
+  92:main.c        **** 
+  93:main.c        **** 	while( ((PINA & 0x03) == 0x01) || ((PINA&0x03) == 0x03 ) )		//   keep turning left
+  94:main.c        **** 	{
+  95:main.c        **** 	if(steer == 175)					//   stop if angle exceeds limit
+ 790               	,r22
+ 792 03a4 6091 0000 	.LM109:
+ 793 03a8 7091 0000 		ldi r24,lo8(0)
+ 794 03ac 6F3A      		ldi r25,hi8(0)
+ 795 03ae 7105      		call __floatunsisf
+ 796 03b0 01F0      		ldi r20,lo8(3)
+  96:main.c        **** 		{
+  97:main.c        **** 			break;
+  98:main.c        **** 		}
+  99:main.c        **** 	else
+ 100:main.c        **** 		{
+ 101:main.c        **** 			steer++;
+ 797               	1,hi8(3)
+ 798               	.L38:
+ 799 03b2 6F5F      		call deg
+ 801 03b6 7093 0000 	.LM110:
+ 802 03ba 6093 0000 		ldi r24,lo8(50)
+ 102:main.c        **** 			deg(steer,3);				// for hip motor
+ 803               	25,hi8(50)
+ 804               		call msdelay
+ 806 03c0 90E0      	.LM111:
+ 807 03c2 0E94 0000 		in r24,57-32
+ 808 03c6 43E0      		andi r24,lo8(3)
+ 809 03c8 50E0      		cpi r24,lo8(1)
+ 810               		breq .L36
+ 811 03ca 0E94 0000 		in r24,57-32
+ 103:main.c        **** 			msdelay(50);
+ 812               	,lo8(3)
+ 813               		cpi r24,lo8(3)
+ 814 03ce 82E3      		breq .L36
+ 815 03d0 90E0      	.L37:
+ 816 03d2 0E94 0000 		ret
+ 818               	.Lscope9:
+ 820 03d8 8370      	.global	turnright
+ 822 03dc 01F0      	turnright:
+ 824 03e0 8370      	.LM112:
+ 825 03e2 8330      	.LFBB10:
+ 826 03e4 01F0      	/* prologue: function */
+ 827               	/* frame size = 0 */
+ 829               	.LM113:
+ 830               		call stand
+ 832               	.LM114:
+ 833               		ldi r24,lo8(200)
+ 834               		ldi r25,hi8(200)
+ 104:main.c        **** 		}
+ 105:main.c        **** 	}	
+ 106:main.c        **** }
+ 107:main.c        **** 
+ 108:main.c        **** /*********************************** Function to turn right ***************************************
+ 109:main.c        **** void turnright()
+ 110:main.c        **** {
+ 835               	8,0,114,.LM115-.LFBB10
+ 836               	.LM115:
+ 837               		ldi r22,lo8(0x430c0000)
+ 838               		ldi r23,hi8(0x430c0000)
+ 839               		ldi r24,hlo8(0x430c0000)
+ 111:main.c        **** 	stand();
+ 840               	r25,hhi8(0x430c0000)
+ 841               		ldi r20,lo8(0)
+ 842 03e8 0E94 0000 		ldi r21,hi8(0)
+ 112:main.c        **** 	msdelay(200);
+ 843               	ll deg
+ 845 03ec 88EC      	.LM116:
+ 846 03ee 90E0      		ldi r22,lo8(0x42f00000)
+ 847 03f0 0E94 0000 		ldi r23,hi8(0x42f00000)
+ 113:main.c        **** 	
+ 114:main.c        **** 	deg(140,0);			//    knee
+ 848               	r24,hlo8(0x42f00000)
+ 849               		ldi r25,hhi8(0x42f00000)
+ 850 03f4 60E0      		ldi r20,lo8(1)
+ 851 03f6 70E0      		ldi r21,hi8(1)
+ 852 03f8 8CE0      		call deg
+ 854 03fc 40E0      	.LM117:
+ 855 03fe 50E0      		ldi r22,lo8(0x43070000)
+ 856 0400 0E94 0000 		ldi r23,hi8(0x43070000)
+ 115:main.c        **** 	deg(120,1);			//    thigh
+ 857               	hlo8(0x43070000)
+ 858               		ldi r25,hhi8(0x43070000)
+ 859 0404 60E0      		ldi r20,lo8(2)
+ 860 0406 70E0      		ldi r21,hi8(2)
+ 861 0408 80EF      		rjmp .L44
+ 862 040a 92E4      	.L42:
+ 864 040e 50E0      	.LM118:
+ 865 0410 0E94 0000 		lds r22,steer
+ 116:main.c        **** 	deg(135,2);			//    ankle
+ 866               	(steer)+1
+ 867               		cpi r22,5
+ 868 0414 60E0      		cpc r23,__zero_reg__
+ 869 0416 70E0      		breq .L43
+ 871 041a 93E4      	.LM119:
+ 872 041c 42E0      		subi r22,lo8(-(-1))
+ 873 041e 50E0      		sbci r23,hi8(-(-1))
+ 874 0420 00C0      		sts (steer)+1,r23
+ 875               		sts steer,r22
+ 117:main.c        **** 	msdelay(50);
+ 118:main.c        **** 
+ 119:main.c        **** 	while( ((PINA&0x03) == 0x02 ) || ((PINA&0x03) == 0x03 ) )  		// keep turning right 
+ 120:main.c        **** 	{
+ 121:main.c        **** 	if(steer == 5)						// stop if angle exceeds limit
+ 876               	,0,128,.LM120-.LFBB10
+ 877               	.LM120:
+ 878 0422 6091 0000 		ldi r24,lo8(0)
+ 879 0426 7091 0000 		ldi r25,hi8(0)
+ 880 042a 6530      		call __floatunsisf
+ 881 042c 7105      		ldi r20,lo8(3)
+ 882 042e 01F0      		ldi r21,hi8(3)
+ 122:main.c        **** 		{
+ 123:main.c        **** 			break;		
+ 124:main.c        **** 		}
+ 125:main.c        **** 	else
+ 126:main.c        **** 		{
+ 127:main.c        **** 			steer--;
+ 883               	call deg
+ 885 0430 6150      	.LM121:
+ 886 0432 7040      		ldi r24,lo8(50)
+ 887 0434 7093 0000 		ldi r25,hi8(50)
+ 888 0438 6093 0000 		call msdelay
+ 128:main.c        **** 			deg(steer,3);				// for hip motor 
+ 889               	n	68,0,119,.LM122-.LFBB10
+ 890               	.LM122:
+ 891 043c 80E0      		in r24,57-32
+ 892 043e 90E0      		andi r24,lo8(3)
+ 893 0440 0E94 0000 		cpi r24,lo8(2)
+ 894 0444 43E0      		breq .L42
+ 895 0446 50E0      		in r24,57-32
+ 896               		andi r24,lo8(3)
+ 897 0448 0E94 0000 		cpi r24,lo8(3)
+ 129:main.c        **** 			msdelay(50);
+ 898               	2
+ 899               	.L43:
+ 900 044c 82E3      		ret
+ 902 0450 0E94 0000 	.Lscope10:
+ 904               	.global	turnback
+ 906 0456 8370      	turnback:
+ 908 045a 01F0      	.LM123:
+ 909 045c 89B3      	.LFBB11:
+ 910 045e 8370      	/* prologue: function */
+ 911 0460 8330      	/* frame size = 0 */
+ 913               	.LM124:
+ 914 0464 0895      		ldi r24,lo8(1)
+ 915               		ldi r25,hi8(1)
+ 916               		sts (turnbk_flag)+1,r25
+ 917               		sts turnbk_flag,r24
+ 919               	.LM125:
+ 920               		call stand
+ 130:main.c        **** 		}
+ 131:main.c        **** 	}	
+ 132:main.c        **** }
+ 133:main.c        **** 
+ 134:main.c        **** 
+ 135:main.c        **** /*********************************** Function to turn back ****************************************
+ 136:main.c        **** void turnback()
+ 137:main.c        **** {
+ 921               	-.LFBB11
+ 922               	.LM126:
+ 923               		ldi r24,lo8(200)
+ 924               		ldi r25,hi8(200)
+ 925               		call msdelay
+ 138:main.c        **** //delay(200);
+ 139:main.c        **** 
+ 140:main.c        **** /**************************************************************/
+ 141:main.c        **** turnbk_flag = 1;
+ 926               	bn	68,0,146,.LM127-.LFBB11
+ 927               	.LM127:
+ 928 0466 81E0      		ldi r22,lo8(0x430c0000)
+ 929 0468 90E0      		ldi r23,hi8(0x430c0000)
+ 930 046a 9093 0000 		ldi r24,hlo8(0x430c0000)
+ 931 046e 8093 0000 		ldi r25,hhi8(0x430c0000)
+ 142:main.c        **** 
+ 143:main.c        ****     stand();
+ 932               	20,lo8(0)
+ 933               		ldi r21,hi8(0)
+ 934 0472 0E94 0000 		call deg
+ 144:main.c        **** 	msdelay(200);
+ 935               	tabn	68,0,147,.LM128-.LFBB11
+ 936               	.LM128:
+ 937 0476 88EC      		ldi r22,lo8(0x42f00000)
+ 938 0478 90E0      		ldi r23,hi8(0x42f00000)
+ 939 047a 0E94 0000 		ldi r24,hlo8(0x42f00000)
+ 145:main.c        **** 	
+ 146:main.c        **** 	deg(140,0);			//    knee
+ 940               	r25,hhi8(0x42f00000)
+ 941               		ldi r20,lo8(1)
+ 942 047e 60E0      		ldi r21,hi8(1)
+ 943 0480 70E0      		call deg
+ 945 0484 93E4      	.LM129:
+ 946 0486 40E0      		ldi r22,lo8(0x43070000)
+ 947 0488 50E0      		ldi r23,hi8(0x43070000)
+ 948 048a 0E94 0000 		ldi r24,hlo8(0x43070000)
+ 147:main.c        **** 	deg(120,1);			//    thigh
+ 949               	hhi8(0x43070000)
+ 950               		ldi r20,lo8(2)
+ 951 048e 60E0      		ldi r21,hi8(2)
+ 952 0490 70E0      		call deg
+ 954 0494 92E4      	.LM130:
+ 955 0496 41E0      		ldi r24,lo8(50)
+ 956 0498 50E0      		ldi r25,hi8(50)
+ 957 049a 0E94 0000 		call msdelay
+ 148:main.c        **** 	deg(135,2);			//    ankle
+ 958               	6
+ 959               	.L48:
+ 961 04a0 70E0      	.LM131:
+ 962 04a2 87E0      		lds r22,steer
+ 963 04a4 93E4      		lds r23,(steer)+1
+ 964 04a6 42E0      		subi r22,lo8(-(1))
+ 965 04a8 50E0      		sbci r23,hi8(-(1))
+ 966 04aa 0E94 0000 		sts (steer)+1,r23
+ 149:main.c        **** 	msdelay(50);
+ 967               	r,r22
+ 969 04ae 82E3      	.LM132:
+ 970 04b0 90E0      		ldi r24,lo8(0)
+ 971 04b2 0E94 0000 		ldi r25,hi8(0)
+ 972 04b6 00C0      		call __floatunsisf
+ 973               		ldi r20,lo8(3)
+ 150:main.c        **** 
+ 151:main.c        **** 
+ 152:main.c        **** while(turnbk_flag == 1)	
+ 153:main.c        ****      {
+ 154:main.c        **** 			steer++;
+ 974               	1,hi8(3)
+ 975               		call deg
+ 977 04bc 7091 0000 	.LM133:
+ 978 04c0 6F5F      		ldi r24,lo8(50)
+ 979 04c2 7F4F      		ldi r25,hi8(50)
+ 980 04c4 7093 0000 		call msdelay
+ 155:main.c        **** 			deg(steer,3);
+ 982               		in r24,57-32
+ 983               		andi r24,lo8(3)
+ 984 04cc 80E0      		cpi r24,lo8(1)
+ 985 04ce 90E0      		breq .L47
+ 987 04d4 43E0      	.LM135:
+ 988 04d6 50E0      		lds r22,steer
+ 989 04d8 0E94 0000 		lds r23,(steer)+1
+ 156:main.c        **** 			msdelay(50);
+ 990               	,175
+ 991               		cpc r23,__zero_reg__
+ 992 04dc 82E3      		breq .L47
+ 994 04e0 0E94 0000 	.LM136:
+ 157:main.c        **** 			
+ 158:main.c        **** 		if( (PINA & 0x03) == 0x01 )
+ 995               	 r22,lo8(-(-1))
+ 996               		sbci r23,hi8(-(-1))
+ 997 04e4 89B3      		sts (steer)+1,r23
+ 998 04e6 8370      		sts steer,r22
+ 1000 04ea 01F0      	.LM137:
+ 159:main.c        **** 		{
+ 160:main.c        **** 			break;
+ 161:main.c        **** 		}
+ 162:main.c        **** 		else if (steer == 175)
+ 1001               		lds r23,(steer)+1
+ 1002               		cpi r22,175
+ 1003 04ec 6091 0000 		cpc r23,__zero_reg__
+ 1004 04f0 7091 0000 		breq .L47
+ 1006 04f6 7105      	.LM136:
+ 1007 04f8 01F0      		subi r22,lo8(-(-1))
+ 163:main.c        **** 		{
+ 164:main.c        **** 		    break;
+ 165:main.c        **** 		}
+ 166:main.c        **** 		
+ 167:main.c        **** 			steer--;
+ 1008               	23,hi8(-(-1))
+ 1009               		sts (steer)+1,r23
+ 1010 04fa 6150      		sts steer,r22
+ 1012 04fe 7093 0000 	.LM137:
+ 1013 0502 6093 0000 		ldi r24,lo8(0)
+ 168:main.c        **** 			deg(steer,3);
+ 1014               	1
+ 1015               		cpi r22,175
+ 1016 0506 80E0      		cpc r23,__zero_reg__
+ 1017 0508 90E0      		breq .L47
+ 1019 050e 43E0      	.LM136:
+ 1020 0510 50E0      		subi r22,lo8(-(-1))
+ 1021 0512 0E94 0000 		sbci r23,hi8(-(-1))
+ 169:main.c        **** 			msdelay(50);
+ 1022               	eer)+1,r23
+ 1023               		sts steer,r22
+ 1025 0518 90E0      	.LM137:
+ 1026 051a 0E94 0000 		ldi r24,lo8(0)
+ 170:main.c        **** 			
+ 171:main.c        **** 		if((PINA & 0x03) == 0x02)
+ 1027               	1
+ 1028               		cpi r22,175
+ 1029 051e 89B3      		cpc r23,__zero_reg__
+ 1030 0520 8370      		breq .L47
+ 1032 0524 01F0      	.LM136:
+ 172:main.c        **** 		{
+ 173:main.c        **** 		        break;
+ 174:main.c        **** 		}
+ 175:main.c        ****         else if(steer == 5)
+ 1033               	r22,lo8(-(-1))
+ 1034               		sbci r23,hi8(-(-1))
+ 1035 0526 8091 0000 		sts (steer)+1,r23
+ 1036 052a 9091 0000 		sts steer,r22
+ 1038 0530 01F0      	.LM137:
+ 1039               		ldi r24,lo8(0)
+ 1040               		ldi r25,hi8(0)
+ 1041               		call __floatunsisf
+ 1042 0532 8091 0000 		ldi r20,lo8(3)
+ 1043 0536 9091 0000 		ldi r21,hi8(3)
+ 1044 053a 0197      		call deg
+ 1046 053e 00C0      	.LM138:
+ 1047               		ldi r24,lo8(50)
+ 176:main.c        **** 		{
+ 177:main.c        **** 				break;
+ 178:main.c        **** 		} 
+ 179:main.c        ****       }
+ 180:main.c        **** turnbk_flag = 0;
+ 1048               	1,r23
+ 1049               		sts steer,r22
+ 1051 0544 1092 0000 	.LM137:
+ 1052               		ldi r24,lo8(0)
+ 181:main.c        **** 
+ 182:main.c        **** }
+ 1053               	1
+ 1054               		cpi r22,175
+ 1055 0548 0895      		cpc r23,__zero_reg__
+ 1056               		breq .L47
+ 1058               	.LM136:
+ 1059               		subi r22,lo8(-(-1))
+ 1060               		sbci r23,hi8(-(-1))
+ 1061               		sts (steer)+1,r23
+ 183:main.c        **** 
+ 184:main.c        **** /***************************** Main Program *******************************************************
+ 185:main.c        **** int main()
+ 186:main.c        ****  {
+ 1062               	r,r22
+ 1064               	.LM137:
+ 1065 054a CF93      		ldi r24,lo8(0)
+ 1066 054c DF93      		ldi r25,hi8(0)
+ 1067               		call __floatunsisf
+ 1068               		ldi r20,lo8(3)
+ 187:main.c        ****  
+ 188:main.c        **** 	servo_init();					// to initialize the PWM signal for servo motors
+ 1069               		68,0,167,.LM136-.LFBB11
+ 1070               	.LM136:
+ 1071 054e 0E94 0000 		subi r22,lo8(-(-1))
+ 189:main.c        **** 	stand();						// initial standing position
+ 1072               	ci r23,hi8(-(-1))
+ 1073               		sts (steer)+1,r23
+ 1074 0552 0E94 0000 		sts steer,r22
+ 190:main.c        **** 
+ 191:main.c        **** 	msdelay(100);					
+ 1075               	162,.LM135-.LFBB11
+ 1076               	.LM135:
+ 1077 0556 84E6      		lds r22,steer
+ 1078 0558 90E0      		lds r23,(steer)+1
+ 1079 055a 0E94 0000 		cpi r22,175
+ 192:main.c        **** 	DDRB = 0x00;					
+ 1080               	r23,__zero_reg__
+ 1081               		breq .L47
+ 193:main.c        **** 	DDRA = 0x00;					// PORTA initialized as sensor interface input
+ 1083               	136:
+ 1084               		subi r22,lo8(-(-1))
+ 1085 0560 1ABA      		sbci r23,hi8(-(-1))
+ 194:main.c        **** 	
+ 195:main.c        **** 	while(1)
+ 196:main.c        **** 		{
+ 197:main.c        **** 			walk();					// default walking motion
+ 198:main.c        **** 			
+ 199:main.c        **** 			if( (PINA & 0x03) == 0x00 )   			// if no obstacle move forward
+ 200:main.c        **** 			{
+ 201:main.c        **** 				steer = 90;							// default direction
+ 1086               	s (steer)+1,r23
+ 1087               		sts steer,r22
+ 1089 0564 D0E0      	.LM137:
+ 1090               		ldi r24,lo8(0)
+ 1091               		ldi r25,hi8(0)
+ 1092               		call __floatunsisf
+ 1093 0566 0E94 0000 		ldi r20,lo8(3)
+ 1094               		ldi r21,hi8(3)
+ 1095               		call deg
+ 1097 056c 90E0      	.LM138:
+ 1098 056e 8370      		ldi r24,lo8(50)
+ 1099 0570 9070      		ldi r25,hi8(50)
+ 1100 0572 892B      		call msdelay
+ 1102               	.LM139:
+ 1103               		in r24,57-32
+ 1104 0576 D093 0000 		andi r24,lo8(3)
+ 1105 057a C093 0000 		cpi r24,lo8(2)
+ 1106 057e 00C0      		breq .L47
+ 202:main.c        **** 			}
+ 203:main.c        **** 			
+ 204:main.c        **** 		    else if( (PINA & 0x03) == 0x01 )		// if obstacle is at left side
+ 1108               	9,.LM138-.LFBB11
+ 1109               	.LM138:
+ 1110 0580 89B3      		ldi r24,lo8(50)
+ 1111 0582 8370      		ldi r25,hi8(50)
+ 1112 0584 8130      		call msdelay
+ 205:main.c        **** 			{
+ 206:main.c        **** 				turnleft();							// call function to turn left
+ 1114               	r24,lo8(0)
+ 1115               		ldi r25,hi8(0)
+ 1116 0588 0E94 0000 		call __floatunsisf
+ 1117 058c 00C0      		ldi r20,lo8(3)
+ 1118               		ldi r21,hi8(3)
+ 207:main.c        **** 				msdelay(100);
+ 208:main.c        **** 				steer = 90;							// back to normal position after turning
+ 209:main.c        **** 				stand();							// default standing position
+ 210:main.c        **** 			}
+ 211:main.c        **** 			
+ 212:main.c        **** 			else if( (PINA & 0x03) == 0x02 )		// if obstacle is at right side
+ 1119               	.LFBB11
+ 1120               	.LM136:
+ 1121 058e 89B3      		subi r22,lo8(-(-1))
+ 1122 0590 8370      		sbci r23,hi8(-(-1))
+ 1123 0592 8230      		sts (steer)+1,r23
+ 1124 0594 01F4      		sts steer,r22
+ 213:main.c        **** 			{
+ 214:main.c        **** 				turnright();						// call function to turn right
+ 1125               	n	68,0,168,.LM137-.LFBB11
+ 1126               	.LM137:
+ 1127 0596 0E94 0000 		ldi r24,lo8(0)
+ 1128               		ldi r25,hi8(0)
+ 215:main.c        **** 				msdelay(100);		
+ 1129               	pc r23,__zero_reg__
+ 1130               		breq .L47
+ 1132 059c 90E0      	.LM136:
+ 1133 059e 0E94 0000 		subi r22,lo8(-(-1))
+ 216:main.c        **** 				steer = 90;						// back to default after turning
+ 1134               	 r23,hi8(-(-1))
+ 1135               		sts (steer)+1,r23
+ 1136 05a2 D093 0000 		sts steer,r22
+ 1138 05aa 00C0      	.LM137:
+ 1139               		ldi r24,lo8(0)
+ 217:main.c        **** 				stand();							// default standing position
+ 218:main.c        **** 			}
+ 219:main.c        **** 			else if( (PINA & 0x03) == 0x03 )
+ 1140               	1
+ 1141               		cpi r22,175
+ 1142 05ac 89B3      		cpc r23,__zero_reg__
+ 1143 05ae 8370      		breq .L47
+ 1145 05b2 01F4      	.LM136:
+ 220:main.c        **** 			{
+ 221:main.c        **** 				
+ 222:main.c        **** 				msdelay(30);
+ 1146               	r22,lo8(-(-1))
+ 1147               		sbci r23,hi8(-(-1))
+ 1148 05b4 8EE1      		sts (steer)+1,r23
+ 1149 05b6 90E0      		sts steer,r22
+ 223:main.c        **** 				if( (PINA & 0x03) == 0x03 )
+ 1151               	22,steer
+ 1152               		lds r23,(steer)+1
+ 1153 05bc 89B3      		cpi r22,175
+ 1154 05be 8370      		cpc r23,__zero_reg__
+ 1155 05c0 8330      		breq .L47
+ 224:main.c        **** 				{/*turnback();
+ 225:main.c        **** 				msdelay(100);
+ 226:main.c        **** 				steer = 90;
+ 227:main.c        **** 				stand();*/
+ 228:main.c        **** 				
+ 229:main.c        **** 				turnleft();
+ 1157               	:
+ 1158               		subi r22,lo8(-(-1))
+ 1159 05c4 0E94 0000 		sbci r23,hi8(-(-1))
+ 230:main.c        **** 				msdelay(100);
+ 1160               	s (steer)+1,r23
+ 1161               		sts steer,r22
+ 1163 05ca 90E0      	.LM137:
+ 1164 05cc 0E94 0000 		ldi r24,lo8(0)
+ 231:main.c        **** 				stand();
+ 1165               	1
+ 1166               		cpi r22,175
+ 1167 05d0 0E94 0000 		cpc r23,__zero_reg__
+ 232:main.c        **** 				
+ 233:main.c        **** 				turnright();
+ 1168               	eq .L47
+ 1170 05d4 0E94 0000 	.LM136:
+ 234:main.c        **** 				msdelay(100);
+ 1171               	bi r22,lo8(-(-1))
+ 1172               		sbci r23,hi8(-(-1))
+ 1173 05d8 84E6      		sts (steer)+1,r23
+ 1174 05da 90E0      		sts steer,r22
+ 1176               	.LM137:
+ 235:main.c        **** 				stand();
+ 1177               	24,lo8(0)
+ 1178               		ldi r25,hi8(0)
+ 1179 05e0 0E94 0000 		call __floatunsisf
+ 1180 05e4 00C0      		ldi r20,lo8(3)
+ 1181               		ldi r21,hi8(3)
+ 1182               		call deg
+ 1184               	.LM138:
+ 1185               		ldi r24,lo8(50)
+ 1186               		ldi r25,hi8(50)
+ 1187               		call msdelay
+ 1189               	.LM139:
+ 1190               		in r24,57-32
+ 1191               		andi r24,lo8(3)
+ 1192               		cpi r24,lo8(2)
+ 1193               		breq .L47
+ 1195 0000 0000      	.LM140:
+ 1196               		lds r24,steer
+ 1197               		lds r25,(steer)+1
+ 1198               		sbiw r24,5
+ 1199               		breq .L47
+ 1200               	.L46:
+ 1202               	.LM141:
+ 1203               		lds r24,turnbk_flag
+ 1204               		lds r25,(turnbk_flag)+1
+ 1205               		sbiw r24,1
+ 1206               		brne .+2
+ 1207               		rjmp .L48
+ 1208               	.L47:
+ 1210               	.LM142:
+ 1211               		sts (turnbk_flag)+1,__zero_reg__
+ 1212               		sts turnbk_flag,__zero_reg__
+ 1213               	/* epilogue start */
+ 1215               	.LM143:
+ 1216               		ret
+ 1218               	.Lscope11:
+ 1220               	.global	main
+ 1222               	main:
+ 1224               	.LM144:
+ 1225               	.LFBB12:
+ 1226               		push r28
+ 1227               		push r29
+ 1228               	/* prologue: function */
+ 1229               	/* frame size = 0 */
+ 1231               	.LM145:
+ 1232               		call servo_init
+ 1234               	.LM146:
+ 1235               		call stand
+DEFINED SYMBOLS
+                            *ABS*:00000000 main.c
+C:\Users\Ankit\AppData\Local\Temp/ccD6H2rA.s:2      *ABS*:0000003f __SREG__
+C:\Users\Ankit\AppData\Local\Temp/ccD6H2rA.s:3      *ABS*:0000003e __SP_H__
+C:\Users\Ankit\AppData\Local\Temp/ccD6H2rA.s:4      *ABS*:0000003d __SP_L__
+C:\Users\Ankit\AppData\Local\Temp/ccD6H2rA.s:5      *ABS*:00000034 __CCP__
+C:\Users\Ankit\AppData\Local\Temp/ccD6H2rA.s:6      *ABS*:00000000 __tmp_reg__
+C:\Users\Ankit\AppData\Local\Temp/ccD6H2rA.s:7      *ABS*:00000001 __zero_reg__
+C:\Users\Ankit\AppData\Local\Temp/ccD6H2rA.s:71     .text:00000000 servo_init
+C:\Users\Ankit\AppData\Local\Temp/ccD6H2rA.s:139    .text:0000002c __vector_6
+C:\Users\Ankit\AppData\Local\Temp/ccD6H2rA.s:172    .text:00000046 __vector_7
+                            *COM*:00000002 i
+                            *COM*:00000001 m0h
+                            *COM*:00000001 m0l
+                            *COM*:00000001 m1h
+                            *COM*:00000001 m1l
+                            *COM*:00000001 m2h
+                            *COM*:00000001 m2l
+                            *COM*:00000001 m3h
+                            *COM*:00000001 m3l
+C:\Users\Ankit\AppData\Local\Temp/ccD6H2rA.s:297    .text:000000ea deg
+                            *COM*:00000001 temp
+C:\Users\Ankit\AppData\Local\Temp/ccD6H2rA.s:392    .text:0000015c msdelay
+                            *COM*:00000002 delaycnt2
+                            *COM*:00000002 delaymilli
+C:\Users\Ankit\AppData\Local\Temp/ccD6H2rA.s:450    .text:0000019c walk
+C:\Users\Ankit\AppData\Local\Temp/ccD6H2rA.s:1187   .data:00000000 steer
+C:\Users\Ankit\AppData\Local\Temp/ccD6H2rA.s:635    .text:000002ce stand
+C:\Users\Ankit\AppData\Local\Temp/ccD6H2rA.s:692    .text:00000320 check
+C:\Users\Ankit\AppData\Local\Temp/ccD6H2rA.s:748    .text:0000036a turnleft
+C:\Users\Ankit\AppData\Local\Temp/ccD6H2rA.s:834    .text:000003e8 turnright
+C:\Users\Ankit\AppData\Local\Temp/ccD6H2rA.s:920    .text:00000466 turnback
+C:\Users\Ankit\AppData\Local\Temp/ccD6H2rA.s:1194   .bss:00000000 turnbk_flag
+C:\Users\Ankit\AppData\Local\Temp/ccD6H2rA.s:1061   .text:0000054a main
+                            *COM*:00000002 j
+                            *COM*:00000002 k
+                            *COM*:00000001 x
+                            *COM*:00000001 y
+                            *COM*:00000002 delaycnt1
+
+UNDEFINED SYMBOLS
+__mulsf3
+__addsf3
+__fixunssfsi
+__floatunsisf
+__do_copy_data
+__do_clear_bss
